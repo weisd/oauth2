@@ -2,7 +2,6 @@ package qq
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/weisd/oauth2"
 	"github.com/weisd/oauth2/internal"
 	"io/ioutil"
@@ -40,9 +39,6 @@ func GetTokenUid(conf *oauth2.Config, tok *oauth2.Token) (uid string, err error)
 	start := strings.Index(bodyStr, "{")
 	end := strings.LastIndex(bodyStr, "}")
 	jsonStr := string(bodyStr[start : end+1])
-
-	fmt.Println(string(data))
-	fmt.Println(jsonStr)
 
 	var v map[string]string
 	err = json.Unmarshal([]byte(jsonStr), &v)
