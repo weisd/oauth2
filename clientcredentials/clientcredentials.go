@@ -11,16 +11,16 @@
 // server.
 //
 // See http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.4
-package clientcredentials // import "golang.org/x/oauth2/clientcredentials"
+package clientcredentials // import "github.com/weisd/oauth2/clientcredentials"
 
 import (
 	"net/http"
 	"net/url"
 	"strings"
 
+	"github.com/weisd/oauth2"
+	"github.com/weisd/oauth2/internal"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/internal"
 )
 
 // tokenFromInternal maps an *internal.Token struct into

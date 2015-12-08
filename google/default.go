@@ -14,9 +14,9 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/weisd/oauth2"
+	"github.com/weisd/oauth2/jwt"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/jwt"
 	"google.golang.org/cloud/compute/metadata"
 )
 

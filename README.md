@@ -7,13 +7,13 @@ oauth2 package contains a client implementation for OAuth 2.0 spec.
 ## Installation
 
 ~~~~
-go get golang.org/x/oauth2
+go get github.com/weisd/oauth2
 ~~~~
 
 See godoc for further documentation and examples.
 
-* [godoc.org/golang.org/x/oauth2](http://godoc.org/golang.org/x/oauth2)
-* [godoc.org/golang.org/x/oauth2/google](http://godoc.org/golang.org/x/oauth2/google)
+* [godoc.org/github.com/weisd/oauth2](http://godoc.org/github.com/weisd/oauth2)
+* [godoc.org/github.com/weisd/oauth2/google](http://godoc.org/github.com/weisd/oauth2/google)
 
 
 ## App Engine
@@ -40,8 +40,8 @@ with the `oauth2` package.
 
 	import (
 		"golang.org/x/net/context"
-		"golang.org/x/oauth2"
-		"golang.org/x/oauth2/google"
+		"github.com/weisd/oauth2"
+		"github.com/weisd/oauth2/google"
 		newappengine "google.golang.org/appengine"
 		newurlfetch "google.golang.org/appengine/urlfetch"
 

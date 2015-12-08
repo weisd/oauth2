@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/weisd/oauth2"
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
 )
 
 // Set at init time by appenginevm_hook.go. If true, we are on App Engine Managed VMs.
