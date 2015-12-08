@@ -10,4 +10,4 @@ var Endpoint = oauth2.Endpoint{
 	TokenURL: "https://graph.qq.com/oauth2.0/token",
 }
 
-var TokenParser = internal.JsonTokenParser
+var TokenParser = internal.UrlTokenParser
