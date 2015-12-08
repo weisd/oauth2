@@ -113,6 +113,8 @@ var brokenAuthHeaderProviders = []string{
 	"https://www.googleapis.com/",
 	"https://www.linkedin.com/",
 	"https://www.strava.com/oauth/",
+	"https://api.weibo.com/oauth2/",
+	"https://graph.qq.com/oauth2.0/",
 }
 
 func RegisterBrokenAuthHeaderProvider(tokenURL string) {
@@ -142,7 +144,57 @@ func providerAuthHeaderWorks(tokenURL string) bool {
 	return true
 }
 
-func RetrieveToken(ctx context.Context, ClientID, ClientSecret, TokenURL string, v url.Values) (*Token, error) {
+// parser response body to Token
+type TokenParser func(body string) (*Token, error)
+
+var urlTokenParser TokenParser = func(body string) (*Token, error) {
+	var token *Token
+
+	vals, err := url.ParseQuery(string(body))
+	if err != nil {
+		return nil, err
+	}
+	token = &Token{
+		AccessToken:  vals.Get("access_token"),
+		TokenType:    vals.Get("token_type"),
+		RefreshToken: vals.Get("refresh_token"),
+		Raw:          vals,
+	}
+	e := vals.Get("expires_in")
+	if e == "" {
+		// TODO(jbd): Facebook's OAuth2 implementation is broken and
+		// returns expires_in field in expires. Remove the fallback to expires,
+		// when Facebook fixes their implementation.
+		e = vals.Get("expires")
+	}
+	expires, _ := strconv.Atoi(e)
+	if expires != 0 {
+		token.Expiry = time.Now().Add(time.Duration(expires) * time.Second)
+	}
+
+	return token, nil
+}
+
+var jsonTokenParser TokenParser = func(body string) (*Token, error) {
+	var token *Token
+	var err error
+	var tj tokenJSON
+	if err = json.Unmarshal([]byte(body), &tj); err != nil {
+		return nil, err
+	}
+	token = &Token{
+		AccessToken:  tj.AccessToken,
+		TokenType:    tj.TokenType,
+		RefreshToken: tj.RefreshToken,
+		Expiry:       tj.expiry(),
+		Raw:          make(map[string]interface{}),
+	}
+	json.Unmarshal([]byte(body), &token.Raw)
+
+	return token, nil
+}
+
+func RetrieveToken(ctx context.Context, ClientID, ClientSecret, TokenURL string, v url.Values, parser ...TokenParser) (*Token, error) {
 	hc, err := ContextClient(ctx)
 	if err != nil {
 		return nil, err
@@ -173,44 +225,24 @@ func RetrieveToken(ctx context.Context, ClientID, ClientSecret, TokenURL string,
 		return nil, fmt.Errorf("oauth2: cannot fetch token: %v\nResponse: %s", r.Status, body)
 	}
 
+	if len(parser) > 0 {
+		return parser[0](string(body))
+	}
+
 	var token *Token
+
 	content, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
 	switch content {
 	case "application/x-www-form-urlencoded", "text/plain":
-		vals, err := url.ParseQuery(string(body))
+		token, err = urlTokenParser(string(body))
 		if err != nil {
 			return nil, err
 		}
-		token = &Token{
-			AccessToken:  vals.Get("access_token"),
-			TokenType:    vals.Get("token_type"),
-			RefreshToken: vals.Get("refresh_token"),
-			Raw:          vals,
-		}
-		e := vals.Get("expires_in")
-		if e == "" {
-			// TODO(jbd): Facebook's OAuth2 implementation is broken and
-			// returns expires_in field in expires. Remove the fallback to expires,
-			// when Facebook fixes their implementation.
-			e = vals.Get("expires")
-		}
-		expires, _ := strconv.Atoi(e)
-		if expires != 0 {
-			token.Expiry = time.Now().Add(time.Duration(expires) * time.Second)
-		}
 	default:
-		var tj tokenJSON
-		if err = json.Unmarshal(body, &tj); err != nil {
+		token, err = jsonTokenParser(string(body))
+		if err != nil {
 			return nil, err
 		}
-		token = &Token{
-			AccessToken:  tj.AccessToken,
-			TokenType:    tj.TokenType,
-			RefreshToken: tj.RefreshToken,
-			Expiry:       tj.expiry(),
-			Raw:          make(map[string]interface{}),
-		}
-		json.Unmarshal(body, &token.Raw) // no error checks for optional fields
 	}
 	// Don't overwrite `RefreshToken` with an empty value
 	// if this was a token refreshing request.

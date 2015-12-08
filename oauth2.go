@@ -180,6 +180,15 @@ func (c *Config) Exchange(ctx context.Context, code string) (*Token, error) {
 	})
 }
 
+func (c *Config) ExChangeWithParser(ctx context.Context, code string, parser internal.TokenParser) (*Token, error) {
+	return retrieveToken(ctx, c, url.Values{
+		"grant_type":   {"authorization_code"},
+		"code":         {code},
+		"redirect_uri": internal.CondVal(c.RedirectURL),
+		"scope":        internal.CondVal(strings.Join(c.Scopes, " ")),
+	}, parser)
+}
+
 // Client returns an HTTP client using the provided token.
 // The token will auto-refresh as necessary. The underlying
 // HTTP transport will be obtained using the provided context.
