@@ -36,7 +36,7 @@ func GetTokenUid(conf *oauth2.Config, tok *oauth2.Token) (uid string, err error)
 		return "", err
 	}
 
-	var v map[string]string
+	var v map[string]interface{}
 
 	fmt.Println(string(data))
 
@@ -45,7 +45,7 @@ func GetTokenUid(conf *oauth2.Config, tok *oauth2.Token) (uid string, err error)
 		return "", err
 	}
 
-	uid, ok := v["uid"]
+	uid, ok := v["uid"].(string)
 	if !ok {
 		return "", errors.New("uid not found")
 	}

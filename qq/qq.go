@@ -1,8 +1,6 @@
 package qq
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/weisd/oauth2"
 	"github.com/weisd/oauth2/internal"
@@ -22,7 +20,7 @@ func GetTokenUid(conf *oauth2.Config, tok *oauth2.Token) (uid string, err error)
 	client := conf.Client(oauth2.NoContext, tok)
 	params := url.Values{}
 	params.Set("access_token", tok.AccessToken)
-	res, err := client.PostForm("https://graph.qq.com/oauth2.0/me", params)
+	res, err := client.PostForm("https://graph.z.qq.com/moc2/me", params)
 
 	defer res.Body.Close()
 
@@ -31,19 +29,12 @@ func GetTokenUid(conf *oauth2.Config, tok *oauth2.Token) (uid string, err error)
 		return "", err
 	}
 
-	var v map[string]string
-
 	fmt.Println(string(data))
 
-	err = json.Unmarshal(data, &v)
+	vals, err := url.ParseQuery(string(data))
 	if err != nil {
 		return "", err
 	}
 
-	uid, ok := v["openid"]
-	if !ok {
-		return "", errors.New("uid not found")
-	}
-
-	return "", nil
+	return vals.Get("openid"), nil
 }
