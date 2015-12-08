@@ -10,6 +10,4 @@ var Endpoint = oauth2.Endpoint{
 	TokenURL: "https://graph.qq.com/oauth2.0/token",
 }
 
-var TokenParser = func(body string) (*internal.Token, error) {
-	return nil, nil
-}
+var TokenParser = internal.JsonTokenParser

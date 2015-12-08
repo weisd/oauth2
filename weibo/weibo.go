@@ -11,6 +11,4 @@ var Endpoint = oauth2.Endpoint{
 	TokenURL: "https://api.weibo.com/oauth2/access_token",
 }
 
-var TokenParser = func(body string) (*internal.Token, error) {
-	return nil, nil
-}
+var TokenParser = internal.JsonTokenParser
