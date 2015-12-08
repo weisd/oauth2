@@ -149,8 +149,6 @@ type TokenParser func(body string) (*Token, error)
 
 var UrlTokenParser TokenParser = func(body string) (*Token, error) {
 	var token *Token
-
-	fmt.Println(body)
 	vals, err := url.ParseQuery(string(body))
 	if err != nil {
 		return nil, err
@@ -169,12 +167,10 @@ var UrlTokenParser TokenParser = func(body string) (*Token, error) {
 	if expires != 0 {
 		token.Expiry = time.Now().Add(time.Duration(expires) * time.Second)
 	}
-	fmt.Println(token)
 	return token, nil
 }
 
 var JsonTokenParser TokenParser = func(body string) (*Token, error) {
-	fmt.Println(body)
 	var token *Token
 	var err error
 	var tj tokenJSON
@@ -189,7 +185,6 @@ var JsonTokenParser TokenParser = func(body string) (*Token, error) {
 		Raw:          make(map[string]interface{}),
 	}
 	json.Unmarshal([]byte(body), &token.Raw)
-	fmt.Println(token)
 	return token, nil
 }
 
