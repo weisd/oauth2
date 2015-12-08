@@ -45,10 +45,11 @@ func GetTokenUid(conf *oauth2.Config, tok *oauth2.Token) (uid string, err error)
 		return "", err
 	}
 
-	uid, ok := v["uid"].(string)
+	fmt.Println(v)
+	uid, ok := v["uid"]
 	if !ok {
 		return "", errors.New("uid not found")
 	}
 
-	return uid, nil
+	return uid.(string), nil
 }
