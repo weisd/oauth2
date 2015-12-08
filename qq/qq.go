@@ -39,7 +39,7 @@ func GetTokenUid(conf *oauth2.Config, tok *oauth2.Token) (uid string, err error)
 	bodyStr := string(data)
 	start := strings.Index(bodyStr, "{")
 	end := strings.LastIndex(bodyStr, "}")
-	jsonStr := string(bodyStr[start:end])
+	jsonStr := string(bodyStr[start : end+1])
 
 	fmt.Println(string(data))
 	fmt.Println(jsonStr)
