@@ -3,6 +3,7 @@ package weibo
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/weisd/oauth2"
 	"github.com/weisd/oauth2/internal"
 	"io/ioutil"
@@ -36,6 +37,8 @@ func GetTokenUid(conf *oauth2.Config, tok *oauth2.Token) (uid string, err error)
 	}
 
 	var v map[string]string
+
+	fmt.Println(string(data))
 
 	err = json.Unmarshal(data, &v)
 	if err != nil {
