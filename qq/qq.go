@@ -18,9 +18,14 @@ var TokenParser = internal.UrlTokenParser
 func GetTokenUid(conf *oauth2.Config, tok *oauth2.Token) (uid string, err error) {
 
 	client := conf.Client(oauth2.NoContext, tok)
+
 	params := url.Values{}
 	params.Set("access_token", tok.AccessToken)
+
 	res, err := client.PostForm("https://graph.z.qq.com/moc2/me", params)
+	if err != nil {
+		return "", err
+	}
 
 	defer res.Body.Close()
 

@@ -8,6 +8,7 @@ import (
 	"github.com/weisd/oauth2/internal"
 	"io/ioutil"
 	"net/url"
+	"strconv"
 )
 
 // docs http://open.weibo.com/wiki/%E6%8E%88%E6%9D%83%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E
@@ -51,5 +52,5 @@ func GetTokenUid(conf *oauth2.Config, tok *oauth2.Token) (uid string, err error)
 		return "", errors.New("uid not found")
 	}
 
-	return uidIf.(string), nil
+	return strconv.FormatFloat(uidIf.(float64), 'f', -1, 64), nil
 }
